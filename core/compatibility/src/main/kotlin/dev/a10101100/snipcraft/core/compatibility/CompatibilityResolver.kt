@@ -8,8 +8,14 @@ import javax.inject.Singleton
 class CompatibilityResolver @Inject constructor(
     private val blacklist: Set<String> = emptySet(),
 ) {
+    @Volatile private var userBlacklist: Set<String> = emptySet()
+
+    fun setUserBlacklist(packages: Set<String>) {
+        userBlacklist = packages
+    }
+
     fun strategyFor(packageName: String): ExpansionStrategy {
-        if (packageName in blacklist) return ExpansionStrategy.DISABLED
+        if (packageName in blacklist || packageName in userBlacklist) return ExpansionStrategy.DISABLED
         return defaultStrategyFor(packageName)
     }
 }

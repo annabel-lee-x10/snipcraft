@@ -82,6 +82,7 @@ class SnippetRepositoryTest {
         private val onIncrementUsage: suspend (String, Long) -> Unit,
     ) : SnippetRepository {
         override fun observeEnabled() = flowOf(snippets)
+        override fun observeAll() = flowOf(snippets)
         override suspend fun getByShortcut(shortcut: String) = snippets.find { it.shortcut == shortcut }
         override suspend fun upsert(snippet: Snippet) = onUpsert(snippet)
         override suspend fun delete(snippet: Snippet) {}

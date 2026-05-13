@@ -43,4 +43,24 @@ class CompatibilityResolverTest {
     fun `Slack forces PASTE strategy`() {
         assertEquals(ExpansionStrategy.PASTE, resolver.strategyFor("com.Slack"))
     }
+
+    @Test
+    fun `user blacklist package returns DISABLED`() {
+        resolver.setUserBlacklist(setOf("com.user.blocked"))
+        assertEquals(ExpansionStrategy.DISABLED, resolver.strategyFor("com.user.blocked"))
+    }
+
+    @Test
+    fun `user blacklist does not affect non-blacklisted packages`() {
+        resolver.setUserBlacklist(setOf("com.other.app"))
+        assertEquals(ExpansionStrategy.SET_TEXT, resolver.strategyFor("com.some.random.app"))
+    }
+
+    @Test
+    fun `setUserBlacklist replaces prior user blacklist`() {
+        resolver.setUserBlacklist(setOf("com.old.app"))
+        resolver.setUserBlacklist(setOf("com.new.app"))
+        assertEquals(ExpansionStrategy.SET_TEXT, resolver.strategyFor("com.old.app"))
+        assertEquals(ExpansionStrategy.DISABLED, resolver.strategyFor("com.new.app"))
+    }
 }
