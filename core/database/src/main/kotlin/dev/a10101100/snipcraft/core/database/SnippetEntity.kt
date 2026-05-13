@@ -29,4 +29,5 @@ data class SnippetEntity(
     val caseSensitive: Boolean,
     val description: String?,
     val schemaVersion: Int,
+    val syncVersion: Long = 0L,
 )

@@ -17,6 +17,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): SnipcraftDatabase =
         Room.databaseBuilder(context, SnipcraftDatabase::class.java, SnipcraftDatabase.DATABASE_NAME)
+            .addMigrations(SnipcraftDatabase.MIGRATION_1_2)
             .build()
 
     @Provides

@@ -11,4 +11,5 @@ data class FolderEntity(
     val sortOrder: Int,
     val createdAt: Long,
     val updatedAt: Long,
+    val syncVersion: Long = 0L,
 )

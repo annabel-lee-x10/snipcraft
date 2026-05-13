@@ -25,6 +25,7 @@ data class SnippetBackup(
     val isEnabled: Boolean = true,
     val caseSensitive: Boolean = false,
     val description: String? = null,
+    val syncVersion: Long = 0L,
 )
 
 @Serializable
@@ -35,6 +36,7 @@ data class FolderBackup(
     val sortOrder: Int = 0,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
+    val syncVersion: Long = 0L,
 )
 
 enum class ConflictStrategy { SKIP_EXISTING, OVERWRITE }

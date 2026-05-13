@@ -19,6 +19,7 @@ fun SnippetEntity.toDomain() = Snippet(
     isEnabled = isEnabled,
     caseSensitive = caseSensitive,
     description = description,
+    syncVersion = syncVersion,
 )
 
 fun Snippet.toEntity(schemaVersion: Int = 1) = SnippetEntity(
@@ -37,4 +38,5 @@ fun Snippet.toEntity(schemaVersion: Int = 1) = SnippetEntity(
     caseSensitive = caseSensitive,
     description = description,
     schemaVersion = schemaVersion,
+    syncVersion = syncVersion,
 )

@@ -7,4 +7,5 @@ data class Folder(
     val sortOrder: Int = 0,
     val createdAt: Long = 0L,
     val updatedAt: Long = 0L,
+    val syncVersion: Long = 0L,
 )
