@@ -19,3 +19,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Minimal `MainActivity` with Compose "Snipcraft" placeholder + foreground service startup
 - Hilt + HiltWorkerFactory wired into SnipApplication
 - 85 unit tests, all passing (JUnit 5 + JUnit 4/Robolectric)
+- `core:database` — Room v1: SnippetEntity, FolderEntity, CompatibilityRuleEntity; SnippetDao (observeEnabled, getByShortcut, incrementUsage), FolderDao, CompatibilityRuleDao; SnipcraftDatabase; DatabaseModule (Hilt); SnippetMapper, FolderMapper
+- `core:data` — SnippetRepository interface + SnippetRepositoryImpl, FolderRepository, FolderRepositoryImpl, DataModule (Hilt); SeedDataPopulator (8 starter snippets on first launch)
+- `core:compatibility` — CompatibilityResolver with built-in PASTE profiles (Chrome, Firefox, Discord, Slack, WhatsApp, Instagram, Twitter) and DISABLED profiles (systemui, settings); CompatibilityModule (Hilt)
+- `core:accessibility` — ExpansionExecutor (SET_TEXT via ACTION_SET_TEXT; PASTE via clipboard swap + ACTION_PASTE with 600ms restore); SnippetCacheManager (observes repo, keeps TrieMatcher live); VariableEngineModule (Hilt: wires ClipboardVariableResolver to real ClipboardManager); SnipAccessibilityService upgraded to @AndroidEntryPoint with full expansion pipeline
+- 108 total unit tests, all passing

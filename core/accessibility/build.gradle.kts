@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":core:engine"))
     implementation(project(":core:variables"))
     implementation(project(":core:compatibility"))
+    implementation(project(":core:data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.coroutines.android)
