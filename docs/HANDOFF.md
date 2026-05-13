@@ -1,6 +1,6 @@
-# Snipcraft — Pass 6 Handoff
+# Snipcraft — Pass 7 Handoff
 
-> For a fresh Sonnet session picking up from Pass 5 (completed 2026-05-13).
+> For a fresh Sonnet session picking up from Pass 6 (completed 2026-05-13).
 > Read this file in full before touching any code.
 
 ---
@@ -133,6 +133,8 @@ Note the escaped backslash — that format is required by AGP 9.x SDK path valid
 **Pass 4 — Room database + repositories + live expansion (TDD):** `core:database` Room v1 (3 entities, 3 DAOs, schema exported to `schemas/`). `core:data` SnippetRepository + FolderRepository, SeedDataPopulator (8 snippets seeded when DB empty). `core:compatibility` CompatibilityResolver. `core:accessibility` upgraded: `@AndroidEntryPoint`, `ExpansionExecutor` (SET_TEXT + PASTE strategies), `SnippetCacheManager` (Flow-driven live trie rebuild), `VariableEngineModule` (ClipboardManager wired). `SnipAccessibilityService` fully wired with injection. 23 new tests, total 108.
 
 **Pass 5 — Compose CRUD UI (TDD):** `core:designsystem` SnipTheme + typography + EmptyState. `feature:library` LibraryScreen + LibraryViewModel. `feature:editor` EditorScreen + EditorViewModel. `feature:settings` SettingsScreen + SettingsViewModel. `SnipNavHost` with type-safe `@Serializable` routes and bottom NavigationBar. `MainActivity` now renders `SnipNavHost`. 21 new tests (ViewModel + Compose), total 129.
+
+**Pass 6 — Onboarding + Backup + Blacklist (TDD):** `CompatibilityRuleRepository` in `core:data` (observeBlacklistedPackages/addToBlacklist/removeFromBlacklist). `CompatibilityResolver.setUserBlacklist()` updated live from `SnipAccessibilityService` Flow subscription. `ServiceHealthChecker` now `@Singleton @Inject constructor` (Hilt-injectable). `core:backup` BackupManager (export → versioned JSON v1, import with SKIP_EXISTING/OVERWRITE conflict). `feature:onboarding` HorizontalPager (4 pages: Accessibility → Notification → Battery → Sandbox expansion using real TrieMatcher + VariableEngine). `SnipNavHost` shows OnboardingRoute when service not enabled. `feature:settings` Excluded Apps + Backup & Restore sections. 28 new tests, total 157.
 
 ---
 
@@ -268,56 +270,39 @@ Key sections for Pass 6:
 
 | Field | Value |
 |---|---|
-| Main SHA | `2087108` |
-| Branch | `main` (clean, all merged) |
-| Test count | **129 unit tests**, all green |
+| Main SHA | `2087108` (pre-Pass-6) |
+| Branch | `claude/pass-6-onboarding-import-export-blacklist` (PR open) |
+| Test count | **157 unit tests**, all green |
 | `assembleDebug` | CLEAN |
 | APK location | `app/build/outputs/apk/debug/app-debug.apk` (after build) |
 
 **What works end-to-end today (sideload to Pixel 8 Pro):**
-- Install APK → Library screen shows 8 seed snippets
+- Fresh install → Onboarding carousel (Accessibility → Notification → Battery → Sandbox)
+- Sandbox test field: type `;today ` → expands to today's date inline in onboarding
+- Grant accessibility → auto-advances to next card
+- Complete onboarding → Library screen with 8 seed snippets
 - Tap + FAB → create a snippet → saved to Room, appears in list
 - Tap existing snippet → edit or delete
 - Enable Accessibility Service → `SnipAccessibilityService` is live, `SnipForegroundService` starts
 - Type `;today ` in any text field → expands to today's date
 - Type `;sig ` → expands to placeholder signature
 - HealthWatchdogWorker pings every 30 min; notifies if service is killed
+- Settings → Excluded Apps: add/remove package blacklist (applied live in AccessibilityService)
+- Settings → Backup & Restore: Export snippets (share JSON) / Import (file picker + conflict dialog)
 
 **What doesn't work yet:**
-- No onboarding — user must manually enable Accessibility Service
-- No JSON export/import UI (backend exists in `core:backup` skeleton)
-- No compatibility diagnostics screen
-- No per-app blacklist UI (resolver has the logic, no UI)
-- No WebDAV sync
+- No compatibility diagnostics screen (Pass 8)
+- No WebDAV sync (Pass 7)
 
 ---
 
 ## 10. What's Next
 
-### Pass 6 — Onboarding + Export/Import + Blacklist (target this dispatch)
+### Pass 6 — DONE (merged 2026-05-13)
 
-**`feature:onboarding`** (plan section J1):
-1. `OnboardingScreen` — 3-card `HorizontalPager`:
-   - Card 1: "What Snipcraft does" + logo
-   - Card 2: "Why Accessibility access?" — plain-language privacy statement
-   - Card 3: "Battery exemption recommended" — OEM kill mitigation
-2. "Grant Accessibility" primary CTA → `startActivity(Settings.ACTION_ACCESSIBILITY_SETTINGS)`
-3. Post-grant watcher: observe `ServiceHealthChecker.isServiceEnabled()` on resume → show success animation
-4. Sandbox test field: `BasicTextField` with hint "Type `;today` then space", shows expansion inline
-5. "Get started" → navigates to Library
-6. `OnboardingViewModel` checks `SnippetRepository.count() > 0` AND service status → skip onboarding if already set up
-7. Wire into `SnipNavHost`: if `!isSetUp` → start destination is `OnboardingRoute`, else `LibraryRoute`
+Onboarding carousel, JSON backup, per-app blacklist. See CHANGELOG for full detail.
 
-**`core:backup`** — JSON export/import (plan section F, item 9):
-- `BackupManager`: `suspend fun export(): String` (produces JSON per plan schema), `suspend fun import(json: String)`
-- Wire into `feature:settings` Settings screen: "Export snippets" + "Import snippets" buttons
-
-**`feature:settings`** — per-app blacklist:
-- `BlacklistScreen` (accessible from Settings): list of blacklisted packages + add/remove
-- `CompatibilityRuleRepository` (stub exists in plan entities) — implement for user-defined rules
-- For MVP: just a simple "add package name" text field + list
-
-### Pass 7 — WebDAV sync
+### Pass 7 — WebDAV sync (next target)
 
 Per user decision: sync from Day 1 (multiple phones). See plan section G Phase 4 for protocol:
 - Server URL + credentials in local-encrypted DataStore prefs
