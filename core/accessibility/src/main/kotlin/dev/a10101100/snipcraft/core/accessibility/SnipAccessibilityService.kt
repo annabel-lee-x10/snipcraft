@@ -6,6 +6,7 @@ import android.view.accessibility.AccessibilityEvent
 import dagger.hilt.android.AndroidEntryPoint
 import dev.a10101100.snipcraft.core.common.AppLogger
 import dev.a10101100.snipcraft.core.compatibility.CompatibilityResolver
+import dev.a10101100.snipcraft.core.data.CompatibilityRuleRepository
 import dev.a10101100.snipcraft.core.data.SnippetRepository
 import dev.a10101100.snipcraft.core.domain.ExpansionContext
 import dev.a10101100.snipcraft.core.domain.ExpansionStrategy
@@ -26,6 +27,7 @@ class SnipAccessibilityService : AccessibilityService() {
 
     @Inject lateinit var snippetCacheManager: SnippetCacheManager
     @Inject lateinit var compatibilityResolver: CompatibilityResolver
+    @Inject lateinit var compatibilityRuleRepository: CompatibilityRuleRepository
     @Inject lateinit var variableEngine: VariableEngine
     @Inject lateinit var snippetRepository: SnippetRepository
 
@@ -36,6 +38,11 @@ class SnipAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         executor = ExpansionExecutor(applicationContext)
         snippetCacheManager.startObserving(serviceScope)
+        serviceScope.launch {
+            compatibilityRuleRepository.observeBlacklistedPackages().collect { packages ->
+                compatibilityResolver.setUserBlacklist(packages.toSet())
+            }
+        }
         AppLogger.i("SnipAccessibilityService: connected — expansion active")
     }
 

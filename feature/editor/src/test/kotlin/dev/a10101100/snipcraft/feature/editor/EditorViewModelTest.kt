@@ -137,6 +137,7 @@ class EditorViewModelTest {
         onDelete: suspend (Snippet) -> Unit = {},
     ) = object : dev.a10101100.snipcraft.core.data.SnippetRepository {
         override fun observeEnabled() = flowOf(snippets)
+        override fun observeAll() = flowOf(snippets)
         override suspend fun getByShortcut(s: String) = null
         override suspend fun upsert(s: Snippet) = onUpsert(s)
         override suspend fun upsertAll(s: List<Snippet>) {}

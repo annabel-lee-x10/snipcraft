@@ -17,4 +17,10 @@ abstract class DataModule {
     @Binds
     @Singleton
     abstract fun bindFolderRepository(impl: FolderRepositoryImpl): FolderRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCompatibilityRuleRepository(
+        impl: CompatibilityRuleRepositoryImpl,
+    ): CompatibilityRuleRepository
 }

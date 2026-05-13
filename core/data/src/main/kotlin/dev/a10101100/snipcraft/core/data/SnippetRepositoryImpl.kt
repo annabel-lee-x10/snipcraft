@@ -15,6 +15,9 @@ class SnippetRepositoryImpl @Inject constructor(
     override fun observeEnabled(): Flow<List<Snippet>> =
         dao.observeEnabled().map { entities -> entities.map { it.toDomain() } }
 
+    override fun observeAll(): Flow<List<Snippet>> =
+        dao.observeAll().map { entities -> entities.map { it.toDomain() } }
+
     override suspend fun getByShortcut(shortcut: String): Snippet? =
         dao.getByShortcut(shortcut)?.toDomain()
 

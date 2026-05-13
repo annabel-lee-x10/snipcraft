@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SnippetRepository {
     fun observeEnabled(): Flow<List<Snippet>>
+    fun observeAll(): Flow<List<Snippet>>
     suspend fun getByShortcut(shortcut: String): Snippet?
     suspend fun upsert(snippet: Snippet)
     suspend fun upsertAll(snippets: List<Snippet>)

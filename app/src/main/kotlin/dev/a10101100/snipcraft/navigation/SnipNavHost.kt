@@ -13,7 +13,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -21,10 +23,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import dev.a10101100.snipcraft.core.accessibility.ServiceHealthChecker
 import dev.a10101100.snipcraft.feature.editor.EditorScreen
 import dev.a10101100.snipcraft.feature.library.LibraryScreen
+import dev.a10101100.snipcraft.feature.onboarding.OnboardingScreen
 import dev.a10101100.snipcraft.feature.settings.SettingsScreen
 import kotlinx.serialization.Serializable
+
+@Serializable
+object OnboardingRoute
 
 @Serializable
 object LibraryRoute
@@ -40,10 +47,16 @@ fun SnipNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
 ) {
+    val context = LocalContext.current
+    val startDestination: Any = remember {
+        val checker = ServiceHealthChecker(context)
+        if (checker.isServiceEnabled()) LibraryRoute else OnboardingRoute
+    }
+
     val backstackEntry by navController.currentBackStackEntryAsState()
     val isTopLevel = backstackEntry?.destination?.let {
         it.hasRoute(LibraryRoute::class) || it.hasRoute(SettingsRoute::class)
-    } ?: true
+    } ?: false
 
     Scaffold(
         modifier = modifier,
@@ -91,9 +104,18 @@ fun SnipNavHost(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = LibraryRoute,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding),
         ) {
+            composable<OnboardingRoute> {
+                OnboardingScreen(
+                    onComplete = {
+                        navController.navigate(LibraryRoute) {
+                            popUpTo<OnboardingRoute> { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable<LibraryRoute> {
                 LibraryScreen(
                     onSnippetClick = { id -> navController.navigate(EditorRoute(id)) },
