@@ -27,6 +27,7 @@ dependencies {
     implementation(project(":core:accessibility"))
     implementation(project(":core:compatibility"))
     implementation(project(":core:database"))
+    implementation(project(":core:sync"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:library"))
