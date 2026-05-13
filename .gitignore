@@ -1,0 +1,32 @@
+# Gradle
+.gradle/
+build/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# Android Studio
+*.iml
+.idea/
+.DS_Store
+captures/
+*.orig
+
+# Kotlin
+*.class
+*.jar
+*.war
+*.ear
+
+# Local properties (never commit API keys or SDK paths)
+local.properties
+keystore.properties
+
+# Output
+*.apk
+*.aab
+*.ap_
+
+# Logs
+*.log

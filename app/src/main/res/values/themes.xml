@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme — Compose handles the actual Material You theming -->
+    <style name="Theme.Snipcraft" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
