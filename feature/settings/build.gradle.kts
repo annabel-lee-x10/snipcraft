@@ -12,6 +12,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":core:backup"))
+    implementation(project(":core:sync"))
     implementation(project(":core:accessibility"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

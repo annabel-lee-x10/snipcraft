@@ -22,6 +22,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,8 +63,10 @@ fun SettingsScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
+    syncViewModel: SyncViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val syncState by syncViewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var showAddAppDialog by remember { mutableStateOf(false) }
@@ -159,6 +164,7 @@ fun SettingsScreen(
 
     SettingsContent(
         uiState = uiState,
+        syncState = syncState,
         onBack = onBack,
         onOpenAccessibilitySettings = {
             context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
@@ -171,6 +177,15 @@ fun SettingsScreen(
         onRemoveFromBlacklist = viewModel::removeFromBlacklist,
         onExport = viewModel::onExport,
         onImport = { importLauncher.launch("*/*") },
+        onSyncServerUrlChange = syncViewModel::onServerUrlChange,
+        onSyncRemotePathChange = syncViewModel::onRemotePathChange,
+        onSyncUsernameChange = syncViewModel::onUsernameChange,
+        onSyncPasswordChange = syncViewModel::onPasswordChange,
+        onSyncAllowHttpChange = syncViewModel::onAllowHttpChange,
+        onSyncIntervalChange = syncViewModel::onIntervalChange,
+        onSyncTestConnection = syncViewModel::onTestConnection,
+        onSyncNow = syncViewModel::onSyncNow,
+        onSaveSyncConfig = syncViewModel::onSaveConfig,
         modifier = modifier,
     )
 }
@@ -179,6 +194,7 @@ fun SettingsScreen(
 @Composable
 internal fun SettingsContent(
     uiState: SettingsUiState,
+    syncState: SyncUiState = SyncUiState(),
     onBack: () -> Unit,
     onOpenAccessibilitySettings: () -> Unit,
     onRefreshServiceStatus: () -> Unit,
@@ -187,6 +203,15 @@ internal fun SettingsContent(
     onRemoveFromBlacklist: (String) -> Unit,
     onExport: () -> Unit,
     onImport: () -> Unit,
+    onSyncServerUrlChange: (String) -> Unit = {},
+    onSyncRemotePathChange: (String) -> Unit = {},
+    onSyncUsernameChange: (String) -> Unit = {},
+    onSyncPasswordChange: (String) -> Unit = {},
+    onSyncAllowHttpChange: (Boolean) -> Unit = {},
+    onSyncIntervalChange: (Int) -> Unit = {},
+    onSyncTestConnection: () -> Unit = {},
+    onSyncNow: () -> Unit = {},
+    onSaveSyncConfig: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -323,6 +348,22 @@ internal fun SettingsContent(
             Spacer(Modifier.height(8.dp))
             HorizontalDivider()
 
+            SyncSection(
+                state = syncState,
+                onServerUrlChange = onSyncServerUrlChange,
+                onRemotePathChange = onSyncRemotePathChange,
+                onUsernameChange = onSyncUsernameChange,
+                onPasswordChange = onSyncPasswordChange,
+                onAllowHttpChange = onSyncAllowHttpChange,
+                onIntervalChange = onSyncIntervalChange,
+                onTestConnection = onSyncTestConnection,
+                onSyncNow = onSyncNow,
+                onSaveConfig = onSaveSyncConfig,
+            )
+
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+
             SectionHeader("About")
             ListItem(
                 headlineContent = { Text("Snipcraft") },
@@ -340,6 +381,140 @@ private fun SectionHeader(title: String) {
         color = MaterialTheme.colorScheme.primary,
         modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 4.dp),
     )
+}
+
+@Composable
+private fun SyncSection(
+    state: SyncUiState,
+    onServerUrlChange: (String) -> Unit,
+    onRemotePathChange: (String) -> Unit,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onAllowHttpChange: (Boolean) -> Unit,
+    onIntervalChange: (Int) -> Unit,
+    onTestConnection: () -> Unit,
+    onSyncNow: () -> Unit,
+    onSaveConfig: () -> Unit,
+) {
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    SectionHeader("WebDAV Sync")
+
+    OutlinedTextField(
+        value = state.serverUrl,
+        onValueChange = onServerUrlChange,
+        label = { Text("Server URL") },
+        placeholder = { Text("https://nextcloud.example.com") },
+        singleLine = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .testTag("sync_server_url"),
+    )
+    OutlinedTextField(
+        value = state.remotePath,
+        onValueChange = onRemotePathChange,
+        label = { Text("Remote path") },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+    )
+    OutlinedTextField(
+        value = state.username,
+        onValueChange = onUsernameChange,
+        label = { Text("Username") },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+    )
+    OutlinedTextField(
+        value = state.password,
+        onValueChange = onPasswordChange,
+        label = { Text("Password") },
+        singleLine = true,
+        visualTransformation = if (passwordVisible)
+            androidx.compose.ui.text.input.VisualTransformation.None
+        else
+            androidx.compose.ui.text.input.PasswordVisualTransformation(),
+        trailingIcon = {
+            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                Icon(
+                    if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                    contentDescription = if (passwordVisible) "Hide" else "Show",
+                )
+            }
+        },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+    )
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
+    ) {
+        Checkbox(checked = state.allowHttp, onCheckedChange = onAllowHttpChange)
+        Text("Allow plain HTTP (LAN / self-signed servers)", style = MaterialTheme.typography.bodySmall)
+    }
+
+    Text(
+        "Auto-sync interval",
+        style = MaterialTheme.typography.labelMedium,
+        modifier = Modifier.padding(start = 16.dp, top = 8.dp),
+    )
+    Row(Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
+        listOf(0 to "Off", 1 to "1h", 6 to "6h", 24 to "24h").forEach { (hours, label) ->
+            FilterChip(
+                selected = state.intervalHours == hours,
+                onClick = { onIntervalChange(hours) },
+                label = { Text(label) },
+                modifier = Modifier.padding(end = 8.dp),
+            )
+        }
+    }
+
+    state.testResult?.let {
+        Text(
+            it,
+            style = MaterialTheme.typography.bodySmall,
+            color = if (it.startsWith("Error")) MaterialTheme.colorScheme.error
+                    else MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+    }
+
+    state.lastSyncResult?.let { result ->
+        Text(
+            result.summary(),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
+    }
+
+    Row(Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+        OutlinedButton(
+            onClick = onTestConnection,
+            enabled = !state.isTesting,
+            modifier = Modifier.weight(1f).padding(end = 4.dp),
+        ) {
+            if (state.isTesting) CircularProgressIndicator(Modifier.size(16.dp))
+            else Text("Test connection")
+        }
+        OutlinedButton(
+            onClick = onSyncNow,
+            enabled = !state.isSyncing,
+            modifier = Modifier.weight(1f).padding(start = 4.dp),
+        ) {
+            if (state.isSyncing) CircularProgressIndicator(Modifier.size(16.dp))
+            else Text("Sync now")
+        }
+    }
+
+    Button(
+        onClick = onSaveConfig,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+    ) { Text("Save sync settings") }
 }
 
 private val ThemeMode.label: String
