@@ -15,4 +15,5 @@ data class Snippet(
     val isEnabled: Boolean = true,
     val caseSensitive: Boolean = false,
     val description: String? = null,
+    val syncVersion: Long = 0L,
 )

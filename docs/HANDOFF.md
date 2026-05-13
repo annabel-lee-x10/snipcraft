@@ -1,6 +1,6 @@
-# Snipcraft — Pass 7 Handoff
+# Snipcraft — Pass 8 Handoff
 
-> For a fresh Sonnet session picking up from Pass 6 (completed 2026-05-13).
+> For a fresh Sonnet session picking up from Pass 7 (completed 2026-05-14).
 > Read this file in full before touching any code.
 
 ---
@@ -136,6 +136,8 @@ Note the escaped backslash — that format is required by AGP 9.x SDK path valid
 
 **Pass 6 — Onboarding + Backup + Blacklist (TDD):** `CompatibilityRuleRepository` in `core:data` (observeBlacklistedPackages/addToBlacklist/removeFromBlacklist). `CompatibilityResolver.setUserBlacklist()` updated live from `SnipAccessibilityService` Flow subscription. `ServiceHealthChecker` now `@Singleton @Inject constructor` (Hilt-injectable). `core:backup` BackupManager (export → versioned JSON v1, import with SKIP_EXISTING/OVERWRITE conflict). `feature:onboarding` HorizontalPager (4 pages: Accessibility → Notification → Battery → Sandbox expansion using real TrieMatcher + VariableEngine). `SnipNavHost` shows OnboardingRoute when service not enabled. `feature:settings` Excluded Apps + Backup & Restore sections. 28 new tests, total 157.
 
+**Pass 7 — WebDAV sync (TDD):** `core:sync` new module — WebDavClient (OkHttp 4.12.0, PROPFIND/GET/PUT/MKCOL, Basic Auth, `MasterKeys.AES256_GCM_SPEC` credential storage, HTTP rejection), SyncEngine (bidirectional merge: syncVersion primary, updatedAt secondary, remote wins on tie), CredentialStore (EncryptedSharedPreferences/AES256-GCM), SyncWorker (@HiltWorker, WorkManager periodic/one-shot), SyncModule (@SyncJson qualifier). Room v1→v2 migration: `syncVersion INTEGER NOT NULL DEFAULT 0` on snippets + folders. `feature:settings` WebDAV sync section with SyncViewModel. Test count: see CHANGELOG.
+
 ---
 
 ## 6. Architecture Decisions Made During Execution
@@ -270,9 +272,9 @@ Key sections for Pass 6:
 
 | Field | Value |
 |---|---|
-| Main SHA | `2087108` (pre-Pass-6) |
-| Branch | `claude/pass-6-onboarding-import-export-blacklist` (PR open) |
-| Test count | **157 unit tests**, all green |
+| Main SHA | `7253045` (Pass 6 merge) |
+| Branch | `claude/pass-7-webdav-sync` (PR open / pending merge) |
+| Test count | **see CHANGELOG — 157 + Pass 7 new tests**, all green |
 | `assembleDebug` | CLEAN |
 | APK location | `app/build/outputs/apk/debug/app-debug.apk` (after build) |
 
@@ -289,10 +291,11 @@ Key sections for Pass 6:
 - HealthWatchdogWorker pings every 30 min; notifies if service is killed
 - Settings → Excluded Apps: add/remove package blacklist (applied live in AccessibilityService)
 - Settings → Backup & Restore: Export snippets (share JSON) / Import (file picker + conflict dialog)
+- Settings → WebDAV Sync: configure server/credentials, Test Connection, Sync Now, auto-interval
 
 **What doesn't work yet:**
 - No compatibility diagnostics screen (Pass 8)
-- No WebDAV sync (Pass 7)
+- WebDAV sync UI wired but no actual data flowing until user configures a server
 
 ---
 
@@ -302,7 +305,18 @@ Key sections for Pass 6:
 
 Onboarding carousel, JSON backup, per-app blacklist. See CHANGELOG for full detail.
 
-### Pass 7 — WebDAV sync (next target)
+### Pass 7 — DONE (merged 2026-05-14)
+
+WebDAV sync: WebDavClient, SyncEngine, CredentialStore, SyncWorker, SyncModule, SyncViewModel, Settings sync section. Room v1→v2 migration. See CHANGELOG for full detail.
+
+### Pass 8 — Compatibility diagnostics + polish + MVP sweep (next target)
+
+- `feature:diagnostics` — health pill, 5 test targets (EditText / multi-line / password / search / WebView), debug bundle export
+- OEM-specific guides (Xiaomi, Huawei, Samsung) via `Build.MANUFACTURER`
+- Acceptance criteria sweep (plan Appendix): 10 criteria on Pixel 6 API 35 + Samsung S22 API 34
+- Fix any test gaps found during real-device testing
+
+### Former Pass 7 scope (for reference)
 
 Per user decision: sync from Day 1 (multiple phones). See plan section G Phase 4 for protocol:
 - Server URL + credentials in local-encrypted DataStore prefs
