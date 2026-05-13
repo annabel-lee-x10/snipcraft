@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
+    implementation(project(":core:accessibility"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:onboarding"))
     implementation(project(":feature:library"))
@@ -49,6 +50,9 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     implementation(libs.timber)
+    implementation(libs.workmanager.ktx)
+    implementation(libs.hilt.work)
+    ksp(libs.hilt.compiler)
 
     testImplementation(libs.junit5.api)
     testRuntimeOnly(libs.junit5.engine)

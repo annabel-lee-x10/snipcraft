@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_label">Snipcraft</string>
+    <string name="accessibility_service_summary">Snipcraft expands your text shortcuts system-wide</string>
+    <string name="accessibility_service_description">Snipcraft monitors text fields to detect your shortcuts and expand them. It does not log keystrokes — only your configured shortcuts trigger it. No data leaves your device.</string>
+</resources>
