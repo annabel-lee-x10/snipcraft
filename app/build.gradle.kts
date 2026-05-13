@@ -2,6 +2,7 @@ plugins {
     id("snipcraft.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
     id("snipcraft.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -52,6 +53,7 @@ dependencies {
     debugImplementation(libs.compose.ui.test.manifest)
 
     implementation(libs.timber)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.workmanager.ktx)
     implementation(libs.hilt.work)
     ksp(libs.hilt.compiler)
