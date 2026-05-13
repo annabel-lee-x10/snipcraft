@@ -4,9 +4,14 @@ import android.accessibilityservice.AccessibilityServiceInfo
 import android.content.ComponentName
 import android.content.Context
 import android.view.accessibility.AccessibilityManager
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ServiceHealthChecker(private val context: Context) {
-
+@Singleton
+class ServiceHealthChecker @Inject constructor(
+    @ApplicationContext private val context: Context,
+) {
     fun isServiceEnabled(): Boolean {
         val am = context.getSystemService(Context.ACCESSIBILITY_SERVICE) as AccessibilityManager
         val enabled = am.getEnabledAccessibilityServiceList(AccessibilityServiceInfo.FEEDBACK_ALL_MASK)
