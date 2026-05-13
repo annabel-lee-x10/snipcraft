@@ -24,3 +24,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `core:compatibility` — CompatibilityResolver with built-in PASTE profiles (Chrome, Firefox, Discord, Slack, WhatsApp, Instagram, Twitter) and DISABLED profiles (systemui, settings); CompatibilityModule (Hilt)
 - `core:accessibility` — ExpansionExecutor (SET_TEXT via ACTION_SET_TEXT; PASTE via clipboard swap + ACTION_PASTE with 600ms restore); SnippetCacheManager (observes repo, keeps TrieMatcher live); VariableEngineModule (Hilt: wires ClipboardVariableResolver to real ClipboardManager); SnipAccessibilityService upgraded to @AndroidEntryPoint with full expansion pipeline
 - 108 total unit tests, all passing
+- `core:designsystem` — SnipTheme (Material 3, dynamic colors on Android 12+, dark-first fallback), SnipTypography, Color tokens, EmptyState composable
+- `feature:library` — LibraryScreen (search, sort by frequency/recent/alpha, pin, FAB, empty state); LibraryViewModel (StateFlow, search filter, sort, pin toggle, delete); 6 ViewModel tests + 2 Compose screen tests (empty + populated state)
+- `feature:editor` — EditorScreen (shortcut + body + description fields, enabled toggle, save in TopAppBar + body, delete for existing); EditorViewModel (load existing snippet, canSave validation, save/delete → NavigateBack events); 7 ViewModel tests + 4 Compose screen tests (disabled save, enabled save, click save, delete icon for edit)
+- `feature:settings` — SettingsScreen (accessibility service status + Open Settings CTA + Re-check, theme mode chips, about section); SettingsViewModel (ServiceHealthChecker, ThemeMode toggle); 2 ViewModel tests
+- `SnipNavHost` — type-safe Navigation Compose routes (LibraryRoute, EditorRoute, SettingsRoute), bottom nav bar (Library / Settings), Editor as full-screen overlay
+- `MainActivity` — replaced Compose placeholder with SnipNavHost + SnipTheme
+- 129 total unit tests, all passing
