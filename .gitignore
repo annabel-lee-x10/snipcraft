@@ -23,6 +23,11 @@ captures/
 local.properties
 keystore.properties
 
+# Signing keystores — never commit
+*.jks
+*.keystore
+release-keystore.jks
+
 # Output
 *.apk
 *.aab
