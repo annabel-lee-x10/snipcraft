@@ -6,14 +6,20 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [SnippetEntity::class, FolderEntity::class, CompatibilityRuleEntity::class],
-    version = 2,
+    entities = [
+        SnippetEntity::class,
+        FolderEntity::class,
+        CompatibilityRuleEntity::class,
+        ExpansionHistoryEntity::class,
+    ],
+    version = 3,
     exportSchema = true,
 )
 abstract class SnipcraftDatabase : RoomDatabase() {
     abstract fun snippetDao(): SnippetDao
     abstract fun folderDao(): FolderDao
     abstract fun compatibilityRuleDao(): CompatibilityRuleDao
+    abstract fun expansionHistoryDao(): ExpansionHistoryDao
 
     companion object {
         const val DATABASE_NAME = "snipcraft.db"

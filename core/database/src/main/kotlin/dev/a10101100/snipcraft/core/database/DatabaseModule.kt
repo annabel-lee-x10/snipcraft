@@ -17,15 +17,14 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): SnipcraftDatabase =
         Room.databaseBuilder(context, SnipcraftDatabase::class.java, SnipcraftDatabase.DATABASE_NAME)
-            .addMigrations(SnipcraftDatabase.MIGRATION_1_2)
+            .addMigrations(SnipcraftDatabase.MIGRATION_1_2, MIGRATION_2_3)
             .build()
 
-    @Provides
-    fun provideSnippetDao(db: SnipcraftDatabase): SnippetDao = db.snippetDao()
+    @Provides fun provideSnippetDao(db: SnipcraftDatabase): SnippetDao = db.snippetDao()
 
-    @Provides
-    fun provideFolderDao(db: SnipcraftDatabase): FolderDao = db.folderDao()
+    @Provides fun provideFolderDao(db: SnipcraftDatabase): FolderDao = db.folderDao()
 
-    @Provides
-    fun provideCompatibilityRuleDao(db: SnipcraftDatabase): CompatibilityRuleDao = db.compatibilityRuleDao()
+    @Provides fun provideCompatibilityRuleDao(db: SnipcraftDatabase): CompatibilityRuleDao = db.compatibilityRuleDao()
+
+    @Provides fun provideExpansionHistoryDao(db: SnipcraftDatabase): ExpansionHistoryDao = db.expansionHistoryDao()
 }
