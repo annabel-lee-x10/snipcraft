@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import dev.a10101100.snipcraft.core.accessibility.ServiceHealthChecker
+import dev.a10101100.snipcraft.feature.diagnostics.DiagnosticsScreen
 import dev.a10101100.snipcraft.feature.editor.EditorScreen
 import dev.a10101100.snipcraft.feature.library.LibraryScreen
 import dev.a10101100.snipcraft.feature.onboarding.OnboardingScreen
@@ -38,6 +39,9 @@ object LibraryRoute
 
 @Serializable
 object SettingsRoute
+
+@Serializable
+object DiagnosticsRoute
 
 @Serializable
 data class EditorRoute(val snippetId: String? = null)
@@ -131,7 +135,11 @@ fun SnipNavHost(
             composable<SettingsRoute> {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
+                    onDiagnostics = { navController.navigate(DiagnosticsRoute) },
                 )
+            }
+            composable<DiagnosticsRoute> {
+                DiagnosticsScreen(onBack = { navController.popBackStack() })
             }
         }
     }
