@@ -8,7 +8,6 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -23,27 +22,28 @@ class WebDavClientTest {
     @BeforeEach fun start() { server.start() }
     @AfterEach  fun stop()  { server.shutdown() }
 
+    // MockWebServer always binds to http://, so allowHttp=true is required for these tests.
     private fun url(path: String = "/snipcraft/snippets.json") =
         server.url(path).toString()
 
     @Test
     fun `propFind returns Found when server responds 207`() = runTest {
         server.enqueue(MockResponse().setResponseCode(207).setBody("<multistatus/>"))
-        val result = client.propFind(url(), creds)
+        val result = client.propFind(url(), creds, allowHttp = true)
         assertEquals(WebDavClient.PropFindResult.Found, result)
     }
 
     @Test
     fun `propFind returns NotFound when server responds 404`() = runTest {
         server.enqueue(MockResponse().setResponseCode(404))
-        val result = client.propFind(url(), creds)
+        val result = client.propFind(url(), creds, allowHttp = true)
         assertEquals(WebDavClient.PropFindResult.NotFound, result)
     }
 
     @Test
     fun `propFind sends PROPFIND method with Basic auth`() = runTest {
         server.enqueue(MockResponse().setResponseCode(207).setBody("<multistatus/>"))
-        client.propFind(url(), creds)
+        client.propFind(url(), creds, allowHttp = true)
         val req: RecordedRequest = server.takeRequest()
         assertEquals("PROPFIND", req.method)
         assertTrue(req.getHeader("Authorization")?.startsWith("Basic ") == true)

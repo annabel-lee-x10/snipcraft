@@ -1,6 +1,5 @@
 package dev.a10101100.snipcraft.core.sync
 
-import android.util.Base64
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -14,9 +13,8 @@ class WebDavClient @Inject constructor(
 ) {
     data class Credentials(val username: String, val password: String) {
         fun basicHeader(): String {
-            val encoded = Base64.encodeToString(
-                "$username:$password".toByteArray(Charsets.UTF_8),
-                Base64.NO_WRAP,
+            val encoded = java.util.Base64.getEncoder().encodeToString(
+                "$username:$password".toByteArray(Charsets.UTF_8)
             )
             return "Basic $encoded"
         }
