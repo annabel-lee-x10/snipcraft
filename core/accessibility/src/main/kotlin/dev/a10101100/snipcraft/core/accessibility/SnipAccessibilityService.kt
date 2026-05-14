@@ -7,6 +7,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.a10101100.snipcraft.core.common.AppLogger
 import dev.a10101100.snipcraft.core.compatibility.CompatibilityResolver
 import dev.a10101100.snipcraft.core.data.CompatibilityRuleRepository
+import dev.a10101100.snipcraft.core.data.ExpansionHistoryRepository
 import dev.a10101100.snipcraft.core.data.SnippetRepository
 import dev.a10101100.snipcraft.core.domain.ExpansionContext
 import dev.a10101100.snipcraft.core.domain.ExpansionStrategy
@@ -30,6 +31,7 @@ class SnipAccessibilityService : AccessibilityService() {
     @Inject lateinit var compatibilityRuleRepository: CompatibilityRuleRepository
     @Inject lateinit var variableEngine: VariableEngine
     @Inject lateinit var snippetRepository: SnippetRepository
+    @Inject lateinit var expansionHistoryRepository: ExpansionHistoryRepository
 
     private val serviceScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val eventProcessor = AccessibilityEventProcessor()
@@ -73,11 +75,19 @@ class SnipAccessibilityService : AccessibilityService() {
             )
             val expandedText = variableEngine.resolve(snippet.body, ctx)
             val node = event.source ?: return@launch
+            val now = System.currentTimeMillis()
             val ok = executor.execute(node, text, shortcut, expandedText, strategy)
             if (ok) {
-                snippetRepository.incrementUsage(snippet.id, System.currentTimeMillis())
-                AppLogger.i("Expanded '%s' → '%s' in %s", shortcut, expandedText, snapshot.packageName)
+                snippetRepository.incrementUsage(snippet.id, now)
+                AppLogger.i("Expanded '%s' in %s", shortcut, snapshot.packageName)
             }
+            expansionHistoryRepository.logExpansion(
+                shortcut = shortcut,
+                packageName = snapshot.packageName,
+                timestamp = now,
+                success = ok,
+                errorReason = if (ok) null else "executor_failed",
+            )
         }
     }
 

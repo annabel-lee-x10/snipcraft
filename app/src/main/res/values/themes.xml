@@ -2,4 +2,12 @@
 <resources>
     <!-- Base application theme — Compose handles the actual Material You theming -->
     <style name="Theme.Snipcraft" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- Splash screen theme — used only for the instant startup window -->
+    <style name="Theme.Snipcraft.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1C1B1F</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenIconBackgroundColor">#6750A4</item>
+        <item name="postSplashScreenTheme">@style/Theme.Snipcraft</item>
+    </style>
 </resources>

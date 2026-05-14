@@ -336,4 +336,91 @@ Defer until MVP ships: INSTANT/MANUAL triggers, user-defined variables, `{{curso
 
 ---
 
-*Generated 2026-05-13 — Passes 1–5 complete. Pick up at Pass 6.*
+## 11. Pass 8 — Polish + Diagnostics + v0.1.0 (2026-05-14)
+
+### What shipped
+
+- Room DB migrated v1 → v2 (`expansion_history` table); `ExpansionHistoryRepository` added; `SnipAccessibilityService` logs each expansion attempt
+- `feature:diagnostics` — full screen: 5 service status pills (accessibility, foreground service, WorkManager watchdog, battery exemption, notification), IME detection, test field, last-50 expansion log, diagnostics JSON export, watchdog trigger button
+- `DiagnosticsChecker` interface + `AndroidDiagnosticsChecker` production impl; testable with fake
+- Adaptive app icon: paper-snippet glyph (document + 3 text lines vector drawable)
+- Splash screen via `androidx.core.splashscreen` (dark background #1C1B1F + icon + purple icon bg)
+- R8/ProGuard enabled for release builds (`app/proguard-rules.pro`)
+- `strings.xml` expanded with UI string resources
+- All `Icon()` calls have non-null `contentDescription` where semantically meaningful
+- CHANGELOG rolled to `v0.1.0 — 2026-05-14`; README expanded with install guide, module table, build instructions
+- Final test count: 165+ unit tests, all green
+
+### Keystore — how to sign a release APK for sideloading
+
+The keystore is NOT in the repo (gitignored). Generate it once and keep it safe:
+
+```bash
+keytool -genkeypair \
+  -keystore release-keystore.jks \
+  -alias snipcraft \
+  -keyalg RSA \
+  -keysize 2048 \
+  -validity 10000 \
+  -storepass <your-store-password> \
+  -keypass <your-key-password> \
+  -dname "CN=Snipcraft, OU=Personal, O=a10101100, L=Unknown, S=Unknown, C=US"
+```
+
+Create `keystore.properties` (gitignored) at project root:
+
+```properties
+storeFile=../../release-keystore.jks
+storePassword=<your-store-password>
+keyAlias=snipcraft
+keyPassword=<your-key-password>
+```
+
+Wire signing in `app/build.gradle.kts` (before next release):
+
+```kotlin
+import java.util.Properties
+val keystoreProps = Properties().also { props ->
+    val f = rootProject.file("keystore.properties")
+    if (f.exists()) props.load(f.inputStream())
+}
+android {
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProps["storeFile"] as String)
+            storePassword = keystoreProps["storePassword"] as String
+            keyAlias = keystoreProps["keyAlias"] as String
+            keyPassword = keystoreProps["keyPassword"] as String
+        }
+    }
+    buildTypes {
+        release { signingConfig = signingConfigs.getByName("release") }
+    }
+}
+```
+
+Until signing is wired, sideload unsigned APK:
+```bash
+adb install app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+### Phase 2+ roadmap pointer
+
+Planned features deferred post v0.1.0:
+- INSTANT + MANUAL trigger modes
+- User-defined variables (`{{var:name}}`, `{{cursor}}`, `{{ask:label}}`)
+- Suggestion popup (floating overlay anchored to cursor)
+- Expansion menus (one shortcut → multiple choices)
+- Tags + tag filter chips; folder nesting
+- Rich text / image / GIF snippets
+- WebDAV sync (multiple devices)
+- Tasker plugin + Intent API
+- Quick-Add tile (notification shade)
+- Per-app full rule editor (beyond blacklist)
+- Encrypted vault (SQLCipher + biometric)
+
+See `D:\a10101100_labs\PLAN_text_expander.md` §G for full phased roadmap.
+
+---
+
+*Updated 2026-05-14 — v0.1.0 shipped.*

@@ -23,4 +23,10 @@ abstract class DataModule {
     abstract fun bindCompatibilityRuleRepository(
         impl: CompatibilityRuleRepositoryImpl,
     ): CompatibilityRuleRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindExpansionHistoryRepository(
+        impl: ExpansionHistoryRepositoryImpl,
+    ): ExpansionHistoryRepository
 }

@@ -4,7 +4,30 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- Paper body with clipped top-right corner -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M54,26 C38.536,26 26,38.536 26,54 C26,69.464 38.536,82 54,82 C69.464,82 82,69.464 82,54 C82,38.536 69.464,26 54,26 Z" />
+        android:pathData="M27,22 L68,22 L81,35 L81,86 L27,86 Z" />
+    <!-- Folded corner triangle -->
+    <path
+        android:fillColor="#D0B4E8"
+        android:pathData="M68,22 L68,35 L81,35 Z" />
+    <!-- Text line 1 -->
+    <path
+        android:strokeColor="#6750A4"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M36,48 L72,48" />
+    <!-- Text line 2 -->
+    <path
+        android:strokeColor="#6750A4"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M36,58 L72,58" />
+    <!-- Text line 3 (shorter — indicates end of text) -->
+    <path
+        android:strokeColor="#6750A4"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M36,68 L56,68" />
 </vector>

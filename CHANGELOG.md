@@ -6,7 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [Unreleased] — v0.1.0-dev
+## [v0.1.0] — 2026-05-14
 
 ### Added
 - Project skeleton: 20 Gradle modules, version catalog, convention plugins
@@ -15,33 +15,29 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `core:variables` — Built-in `{{date}}`, `{{time}}`, `{{clipboard}}` resolvers (TDD)
 - `core:common` — AppLogger (Timber wrapper, debug/release trees)
 - `core:accessibility` — SnipAccessibilityService, SnipForegroundService (specialUse, START_STICKY, IMPORTANCE_MIN), HealthWatchdogWorker (30-min periodic WorkManager), AccessibilityEventProcessor (password field hard-exclusion), ServiceHealthChecker, NotificationChannels
-- `accessibility_service_config.xml` — typeViewTextChanged|typeViewFocused|typeWindowStateChanged, isAccessibilityTool=true, canRetrieveWindowContent=true
-- Minimal `MainActivity` with Compose "Snipcraft" placeholder + foreground service startup
-- Hilt + HiltWorkerFactory wired into SnipApplication
-- 85 unit tests, all passing (JUnit 5 + JUnit 4/Robolectric)
-- `core:database` — Room v1: SnippetEntity, FolderEntity, CompatibilityRuleEntity; SnippetDao (observeEnabled, getByShortcut, incrementUsage), FolderDao, CompatibilityRuleDao; SnipcraftDatabase; DatabaseModule (Hilt); SnippetMapper, FolderMapper
-- `core:data` — SnippetRepository interface + SnippetRepositoryImpl, FolderRepository, FolderRepositoryImpl, DataModule (Hilt); SeedDataPopulator (8 starter snippets on first launch)
-- `core:compatibility` — CompatibilityResolver with built-in PASTE profiles (Chrome, Firefox, Discord, Slack, WhatsApp, Instagram, Twitter) and DISABLED profiles (systemui, settings); CompatibilityModule (Hilt)
-- `core:accessibility` — ExpansionExecutor (SET_TEXT via ACTION_SET_TEXT; PASTE via clipboard swap + ACTION_PASTE with 600ms restore); SnippetCacheManager (observes repo, keeps TrieMatcher live); VariableEngineModule (Hilt: wires ClipboardVariableResolver to real ClipboardManager); SnipAccessibilityService upgraded to @AndroidEntryPoint with full expansion pipeline
-- 108 total unit tests, all passing
-- `core:designsystem` — SnipTheme (Material 3, dynamic colors on Android 12+, dark-first fallback), SnipTypography, Color tokens, EmptyState composable
-- `feature:library` — LibraryScreen (search, sort by frequency/recent/alpha, pin, FAB, empty state); LibraryViewModel (StateFlow, search filter, sort, pin toggle, delete); 6 ViewModel tests + 2 Compose screen tests (empty + populated state)
-- `feature:editor` — EditorScreen (shortcut + body + description fields, enabled toggle, save in TopAppBar + body, delete for existing); EditorViewModel (load existing snippet, canSave validation, save/delete → NavigateBack events); 7 ViewModel tests + 4 Compose screen tests (disabled save, enabled save, click save, delete icon for edit)
-- `feature:settings` — SettingsScreen (accessibility service status + Open Settings CTA + Re-check, theme mode chips, about section); SettingsViewModel (ServiceHealthChecker, ThemeMode toggle); 2 ViewModel tests
-- `SnipNavHost` — type-safe Navigation Compose routes (LibraryRoute, EditorRoute, SettingsRoute), bottom nav bar (Library / Settings), Editor as full-screen overlay
-- `MainActivity` — replaced Compose placeholder with SnipNavHost + SnipTheme
-- 129 total unit tests, all passing
-- `core:database` — CompatibilityRuleDao: added `observeUserBlacklist()` (Flow, user rules only) and `deleteByPackage()`
-- `core:data` — CompatibilityRuleRepository interface + CompatibilityRuleRepositoryImpl (Hilt @Singleton); SnippetRepository: added `observeAll()` for backup (SnippetDao already had it)
-- `core:compatibility` — CompatibilityResolver: added `setUserBlacklist(Set<String>)` and `@Volatile private var userBlacklist`; user blacklist checked before built-in profiles
-- `core:accessibility` — ServiceHealthChecker: now `@Singleton @Inject constructor(@ApplicationContext)` (Hilt-injectable); SnipAccessibilityService: subscribes to `CompatibilityRuleRepository.observeBlacklistedPackages()` and calls `compatibilityResolver.setUserBlacklist()` live
-- `core:backup` — BackupManager (`export(): String` → versioned JSON v1, `import(json, ConflictStrategy) → ImportResult`); BackupData/SnippetBackup/FolderBackup @Serializable classes; BackupModule (provides `kotlinx.serialization.json.Json` singleton); 5 unit tests (export fields, folder, skip/overwrite, round-trip)
-- `feature:onboarding` — OnboardingScreen (HorizontalPager, 4 pages: Accessibility card → Notification card → Battery exemption card → Sandbox field + "Get Started"); OnboardingViewModel (permission detection via ServiceHealthChecker, lifecycle-resume polling for accessibility grant, auto-advance on grant, sandbox expansion using real TrieMatcher + VariableEngine against seed snippets); 11 ViewModel tests
-- `SnipNavHost` — OnboardingRoute added; start destination is OnboardingRoute when `ServiceHealthChecker.isServiceEnabled() == false`, LibraryRoute otherwise; OnboardingRoute removed from back stack on completion
-- `feature:settings` — Excluded Apps section: list of user-blacklisted packages with per-row delete button + "Add excluded app" dialog (package name text input); Backup & Restore section: Export (share sheet via Intent.ACTION_SEND) + Import (GetContent file picker + conflict dialog: Overwrite / Skip existing) + import result dialog; SettingsViewModel: addToBlacklist, removeFromBlacklist, onExport, onImportJsonReceived, onImportConflictResolved, events Channel (ShareExport, ShowImportResult); 7 new ViewModel tests
-- 157 total unit tests, all passing
-- `core:sync` — new module; WebDavClient (OkHttp 4.12.0: PROPFIND/GET/PUT/MKCOL, Basic Auth, rejects plain HTTP by default; 11 MockWebServer tests); SyncEngine (bidirectional merge: syncVersion primary, updatedAt secondary, remote wins on tie; 6 unit tests); CredentialStore (EncryptedSharedPreferences/MasterKeys AES256-GCM, never logs credentials); SyncWorker (@HiltWorker CoroutineWorker, WorkManager periodic + one-shot, retry on IOException; 3 WorkManager tests); SyncModule (Hilt: OkHttpClient, @SyncJson qualifier avoids conflict with BackupModule Json)
-- `core:database` — Room v1→v2 migration: `ALTER TABLE snippets ADD COLUMN syncVersion INTEGER NOT NULL DEFAULT 0` + same for folders; schema v2 JSON generated
-- `core:domain` — Snippet + Folder: added `syncVersion: Long = 0L` (backward-compatible default)
-- `core:backup` — SnippetBackup + FolderBackup: added `syncVersion: Long = 0L` (backward-compatible; used as sync snapshot format)
-- `feature:settings` — WebDAV sync section: server URL, remote path, username, password (masked, show/hide toggle), plain HTTP toggle, auto-sync interval (Off/1h/6h/24h), Test Connection (PROPFIND inline result), Sync Now, Save settings; SyncViewModel (@HiltViewModel, secondary test constructor); SyncUiState; 6 unit tests
+- `core:database` — Room v3: SnippetEntity, FolderEntity, CompatibilityRuleEntity, ExpansionHistoryEntity; all DAOs; schema exported; migrations 1→2 (syncVersion) and 2→3 (expansion_history)
+- `core:data` — SnippetRepository, FolderRepository, CompatibilityRuleRepository, ExpansionHistoryRepository; SeedDataPopulator (8 starter snippets on first launch)
+- `core:compatibility` — CompatibilityResolver with PASTE profiles (Chrome, Firefox, Discord, Slack, WhatsApp) and DISABLED profiles (systemui); user blacklist support
+- `core:backup` — BackupManager: JSON v1 export/import with SKIP_EXISTING/OVERWRITE conflict handling
+- `core:sync` — WebDavClient (OkHttp 4.12.0: PROPFIND/GET/PUT/MKCOL, Basic Auth; 11 MockWebServer tests); SyncEngine (bidirectional merge, syncVersion primary; 6 tests); CredentialStore (EncryptedSharedPreferences AES256-GCM); SyncWorker (@HiltWorker, WorkManager periodic + one-shot); SyncModule (Hilt)
+- `core:designsystem` — SnipTheme (Material 3, dynamic colors API 31+, dark-first), SnipTypography, Color tokens, EmptyState composable
+- `feature:library` — LibraryScreen: search, sort (frequency/recent/alpha), pin, FAB, empty state
+- `feature:editor` — EditorScreen: shortcut + body + description fields, enabled toggle, save/delete
+- `feature:settings` — SettingsScreen: accessibility status, theme chips, excluded apps, backup/restore, WebDAV sync section, diagnostics entry point; SyncViewModel (WebDAV config + test connection + sync now)
+- `feature:onboarding` — HorizontalPager (Accessibility → Notification → Battery → Sandbox); auto-advances on accessibility grant; real snippet expansion in sandbox
+- `feature:diagnostics` — DiagnosticsScreen: 5 service status pills, IME detection, test field, last-50 expansion log, diagnostics JSON export, watchdog trigger button
+- `SnipNavHost` — type-safe Navigation Compose routes (Library, Settings, Editor, Onboarding, Diagnostics)
+- `SnipAccessibilityService` — logs each expansion attempt to Room `expansion_history` table
+- Adaptive app icon: paper-snippet glyph (document + text lines vector foreground, dark background)
+- Splash screen via `androidx.core.splashscreen` (dark background + icon + purple icon bg)
+- R8/ProGuard enabled for release builds with keep rules for Room, Hilt, kotlinx.serialization, WorkManager
+- `strings.xml` populated; all `Icon()` calls have non-null `contentDescription`
+
+### Changed
+- Version promoted from `0.1.0-dev` to `0.1.0`
+- About section in Settings: version string updated to `v0.1.0`
+
+### Tests
+- 168 unit tests, all green (JUnit 5 + JUnit 4/Robolectric + MockK + Turbine)
+
+[v0.1.0]: https://github.com/annabel-lee-x10/snipcraft/releases/tag/v0.1.0

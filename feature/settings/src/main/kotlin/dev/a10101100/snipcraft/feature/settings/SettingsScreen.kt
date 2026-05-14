@@ -17,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Error
@@ -55,12 +56,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.a10101100.snipcraft.core.backup.ConflictStrategy
-import dev.a10101100.snipcraft.core.backup.ImportResult
 import dev.a10101100.snipcraft.core.designsystem.SnipTheme
 
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onDiagnostics: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
     syncViewModel: SyncViewModel = hiltViewModel(),
@@ -166,6 +167,7 @@ fun SettingsScreen(
         uiState = uiState,
         syncState = syncState,
         onBack = onBack,
+        onDiagnostics = onDiagnostics,
         onOpenAccessibilitySettings = {
             context.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
@@ -196,6 +198,7 @@ internal fun SettingsContent(
     uiState: SettingsUiState,
     syncState: SyncUiState = SyncUiState(),
     onBack: () -> Unit,
+    onDiagnostics: () -> Unit = {},
     onOpenAccessibilitySettings: () -> Unit,
     onRefreshServiceStatus: () -> Unit,
     onThemeModeChange: (ThemeMode) -> Unit,
@@ -221,7 +224,7 @@ internal fun SettingsContent(
                 title = { Text("Settings") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Navigate back")
                     }
                 },
             )
@@ -247,7 +250,10 @@ internal fun SettingsContent(
                     Icon(
                         if (uiState.isAccessibilityServiceEnabled) Icons.Default.CheckCircle
                         else Icons.Default.Error,
-                        contentDescription = null,
+                        contentDescription = if (uiState.isAccessibilityServiceEnabled)
+                            "Accessibility service is active"
+                        else
+                            "Accessibility service is inactive",
                         tint = if (uiState.isAccessibilityServiceEnabled)
                             MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.error,
@@ -303,7 +309,7 @@ internal fun SettingsContent(
                         headlineContent = { Text(pkg, style = MaterialTheme.typography.bodyMedium) },
                         trailingContent = {
                             IconButton(onClick = { onRemoveFromBlacklist(pkg) }) {
-                                Icon(Icons.Filled.Delete, contentDescription = "Remove $pkg")
+                                Icon(Icons.Filled.Delete, contentDescription = "Remove $pkg from excluded apps")
                             }
                         },
                     )
@@ -327,7 +333,7 @@ internal fun SettingsContent(
                     if (uiState.isExporting) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     } else {
-                        Icon(Icons.Filled.Share, contentDescription = null)
+                        Icon(Icons.Filled.Share, contentDescription = "Export snippets")
                     }
                 },
                 modifier = Modifier.clickable(enabled = !uiState.isExporting) { onExport() },
@@ -339,7 +345,7 @@ internal fun SettingsContent(
                     if (uiState.isImporting) {
                         CircularProgressIndicator(modifier = Modifier.size(24.dp))
                     } else {
-                        Icon(Icons.Filled.FileOpen, contentDescription = null)
+                        Icon(Icons.Filled.FileOpen, contentDescription = "Import snippets")
                     }
                 },
                 modifier = Modifier.clickable(enabled = !uiState.isImporting) { onImport() },
@@ -348,7 +354,7 @@ internal fun SettingsContent(
             Spacer(Modifier.height(8.dp))
             HorizontalDivider()
 
-            SyncSection(
+SyncSection(
                 state = syncState,
                 onServerUrlChange = onSyncServerUrlChange,
                 onRemotePathChange = onSyncRemotePathChange,
@@ -364,10 +370,26 @@ internal fun SettingsContent(
             Spacer(Modifier.height(8.dp))
             HorizontalDivider()
 
+            SectionHeader("Diagnostics")
+            ListItem(
+                headlineContent = { Text("Compatibility & diagnostics") },
+                supportingContent = { Text("Service health, expansion log, debug export") },
+                trailingContent = {
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = "Open diagnostics screen",
+                    )
+                },
+                modifier = Modifier.clickable { onDiagnostics() },
+            )
+
+            Spacer(Modifier.height(8.dp))
+            HorizontalDivider()
+
             SectionHeader("About")
             ListItem(
                 headlineContent = { Text("Snipcraft") },
-                supportingContent = { Text("v0.1.0-dev — personal use build") },
+                supportingContent = { Text("v0.1.0 — personal use build") },
             )
         }
     }
@@ -535,6 +557,7 @@ private fun SettingsPreview() {
                 blacklistedPackages = listOf("com.example.blocked"),
             ),
             onBack = {},
+            onDiagnostics = {},
             onOpenAccessibilitySettings = {},
             onRefreshServiceStatus = {},
             onThemeModeChange = {},

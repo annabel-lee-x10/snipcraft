@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dev.a10101100.snipcraft.core.accessibility.SnipForegroundService
 import dev.a10101100.snipcraft.core.designsystem.SnipTheme
@@ -13,6 +14,7 @@ import dev.a10101100.snipcraft.navigation.SnipNavHost
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         startForegroundCompanion()
