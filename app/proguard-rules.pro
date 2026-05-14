@@ -16,5 +16,8 @@
 -keep class **_MembersInjector { *; }
 -keep class **_Factory { *; }
 
+# Google Tink (transitive from security-crypto / EncryptedSharedPreferences)
+-dontwarn com.google.errorprone.annotations.**
+
 # Timber
 -dontwarn org.jetbrains.annotations.**
