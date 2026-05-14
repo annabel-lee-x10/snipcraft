@@ -1,4 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Snipcraft</string>
+
+    <!-- Common actions -->
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Common content descriptions -->
+    <string name="cd_back">Navigate back</string>
+
+    <!-- Library -->
+    <string name="library_title">Library</string>
+    <string name="library_empty_title">No snippets yet</string>
+    <string name="library_empty_body">Tap + to create your first snippet</string>
+    <string name="cd_create_snippet">Create snippet</string>
+    <string name="cd_search_snippets">Search snippets</string>
+    <string name="cd_sort_menu">Sort options</string>
+
+    <!-- Editor -->
+    <string name="editor_title_create">New snippet</string>
+    <string name="editor_title_edit">Edit snippet</string>
+    <string name="editor_shortcut_label">Shortcut</string>
+    <string name="editor_body_label">Body</string>
+    <string name="editor_description_label">Description (optional)</string>
+    <string name="editor_enabled_label">Enabled</string>
+    <string name="cd_delete_snippet">Delete this snippet</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_service_active">Active — text expansion is running</string>
+    <string name="settings_service_inactive">Inactive — tap to enable in Settings</string>
+    <string name="settings_open_accessibility">Open Accessibility Settings</string>
+    <string name="settings_recheck">Re-check status</string>
+    <string name="settings_about_version">v0.1.0 — personal use build</string>
+
+    <!-- Diagnostics -->
+    <string name="diagnostics_title">Compatibility &amp; Diagnostics</string>
+    <string name="diagnostics_export_subject">Snipcraft diagnostics bundle</string>
+    <string name="diagnostics_export_chooser">Export diagnostics</string>
 </resources>
