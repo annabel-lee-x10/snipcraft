@@ -18,6 +18,17 @@ android {
         compose = true
         buildConfig = true
     }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -36,6 +47,7 @@ dependencies {
     implementation(project(":feature:diagnostics"))
 
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.compose.activity)
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
