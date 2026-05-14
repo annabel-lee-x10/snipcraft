@@ -26,17 +26,41 @@ On Pixel 8 Pro with Android 14/15:
 
 [screenshot: Settings → Apps → Special app access → Install unknown apps → Chrome → toggle]
 
-### 3. Install the APK
+### 3. Sign the APK
 
-Tap the downloaded APK. Android will show a warning ("Install unknown app?") — tap **Install**. The app will appear in your launcher as **Snipcraft**.
+The release APK is unsigned. Android refuses to install unsigned APKs. You need `apksigner` from Android SDK Build-Tools (already on your machine if Android Studio is installed).
+
+On Windows (Git Bash):
+
+```bash
+# Set this to your Build-Tools version
+BTVER="35.0.0"
+BTPATH="$LOCALAPPDATA/Android/Sdk/build-tools/$BTVER"
+
+"$BTPATH/apksigner" sign \
+  --ks "$USERPROFILE/.android/debug.keystore" \
+  --ks-key-alias androiddebugkey \
+  --ks-pass pass:android \
+  --key-pass pass:android \
+  --out snipcraft.apk \
+  app-release-unsigned.apk
+```
+
+This signs with the Android debug keystore (always present after Android Studio installation). The resulting `snipcraft.apk` is ready to install.
+
+**Tip:** If you have ADB, skip the "Install unknown apps" dance entirely — see Path B's `adb install` one-liner with the debug APK instead.
+
+### 4. Install the APK
+
+Transfer `snipcraft.apk` to your Pixel 8 Pro (USB, Bluetooth share, or cloud). Open it with your file manager. Android will show a warning ("Install unknown app?") — tap **Install**. The app will appear in your launcher as **Snipcraft**.
 
 ---
 
-### 4. Onboarding walkthrough
+### 5. Onboarding walkthrough
 
 Open Snipcraft. You'll see a 4-step onboarding flow.
 
-#### Step 1 — Grant Accessibility permission
+#### Step 1 (card 1) — Grant Accessibility permission
 
 Tap **Open Accessibility Settings**. You'll land in:
 
@@ -53,13 +77,13 @@ After granting, Snipcraft detects the permission and advances automatically.
 
 [screenshot: Accessibility settings → Downloaded apps → Snipcraft → toggle]
 
-#### Step 2 — Notification permission
+#### Step 2 (card 2) — Notification permission
 
 Tap **Allow notifications**. This enables the health watchdog alert (appears if the service gets killed in the background). Tap **Allow** in the system dialog.
 
 [screenshot: Notification permission dialog]
 
-#### Step 3 — Battery exemption (important for background survival)
+#### Step 3 (card 3) — Battery exemption (important for background survival)
 
 Tap **Grant battery exemption**. You'll land in:
 
@@ -69,7 +93,7 @@ Select **Unrestricted**. Without this, Android may kill the accessibility servic
 
 [screenshot: Apps → Snipcraft → Battery → Unrestricted]
 
-#### Step 4 — Test sandbox
+#### Step 4 (card 4) — Test sandbox
 
 The onboarding ends with a sandbox text field. Try typing `;today ` (semicolon, the word today, then a space). Snipcraft should replace it with today's date inline.
 
@@ -77,7 +101,7 @@ Tap **Get Started** to open the snippet library.
 
 ---
 
-### 5. Create or edit snippets
+### 6. Create or edit snippets
 
 The **Library** screen shows 8 pre-loaded starter snippets (`;sig`, `;email`, `;today`, etc.).
 
@@ -101,7 +125,7 @@ To edit: tap any snippet in the list.
 
 ---
 
-### 6. WebDAV sync setup (optional — for multiple devices)
+### 7. WebDAV sync setup (optional — for multiple devices)
 
 Go to **Settings → WebDAV Sync**.
 
@@ -202,10 +226,18 @@ PATH="$JAVA_HOME/bin:$PATH" \
 
 APK output: `app/build/outputs/apk/release/app-release-unsigned.apk` (unsigned) or `app-release.apk` (signed, if keystore is wired).
 
-Install unsigned APK via ADB:
+The release APK is unsigned and cannot be installed directly via `adb install`. Either wire signing (see `docs/HANDOFF.md` signing section) or sign with the debug keystore before installing:
 
 ```bash
-adb install app/build/outputs/apk/release/app-release-unsigned.apk
+# Quick sign with debug keystore (development use only)
+BTVER="35.0.0"
+"$LOCALAPPDATA/Android/Sdk/build-tools/$BTVER/apksigner" sign \
+  --ks "$USERPROFILE/.android/debug.keystore" \
+  --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android \
+  --out app-release-signed.apk \
+  app/build/outputs/apk/release/app-release-unsigned.apk
+
+adb install app-release-signed.apk
 ```
 
 ### Run tests
