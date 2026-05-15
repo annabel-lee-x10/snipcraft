@@ -5,19 +5,46 @@ in the Play Console UI. Mark each item as you complete it.
 
 ---
 
-## ⚠️  Before you start
+## Account details
 
-- [ ] You have run the keytool command in `docs/RELEASE_KEYSTORE.md` and have
-      `keystore.properties` at project root.
-- [ ] You have run `./gradlew bundleRelease` and the AAB exists at
-      `app/build/outputs/bundle/release/app-release.aab`.
-- [ ] Your privacy policy is hosted at a **publicly reachable URL** (not localhost,
-      not a private GitHub repo, not a file on your desktop).
-      **This is the #1 stall for first-timers.** Play Console will not let you proceed
-      to the store presence or content rating steps until a live URL is entered.
-      Quick option: push `docs/PRIVACY.md` to GitHub and enable GitHub Pages, or use
-      the raw GitHub URL: `https://raw.githubusercontent.com/annabel-lee-x10/snipcraft/main/docs/PRIVACY.md`
-      (raw GitHub URLs are publicly reachable without Pages setup).
+| Field | Value |
+|---|---|
+| Play Console account | `quiet.build.studios@gmail.com` |
+| Package name | `dev.a10101100.snipcraft` |
+| GitHub repo | `https://github.com/annabel-lee-x10/snipcraft` |
+
+---
+
+## ⚠️  Complete these two items BEFORE opening Play Console
+
+### 1 — Privacy policy URL (blocks all progress until done)
+
+The exact URL to use:
+```
+https://raw.githubusercontent.com/annabel-lee-x10/snipcraft/main/docs/PRIVACY.md
+```
+
+- [ ] Open this URL in an **incognito window** and confirm it returns the policy text.
+      Play Console will not let you proceed to store listing, content rating, or AAB
+      upload until a live, publicly reachable URL is entered. This is the #1 stall.
+
+### 2 — Accessibility service video (required for review approval)
+
+Google requires a screen recording for all accessibility service apps.
+
+- [ ] Record a screen capture showing the full expansion flow:
+      open app → create a snippet → type the shortcut in any text field → it expands.
+- [ ] Save the video — you will upload it in the accessibility declaration step below.
+      Without it, the accessibility review (3–7 days) cannot be approved.
+
+---
+
+## ⚠️  Pre-flight checklist
+
+- [ ] Keystore generated and `keystore.properties` exists at project root (see `docs/RELEASE_KEYSTORE.md`).
+- [ ] Signed AAB exists at `app/build/outputs/bundle/release/app-release.aab`.
+- [ ] Privacy policy URL verified in incognito (step 1 above).
+- [ ] Screen recording saved (step 2 above).
 
 ---
 

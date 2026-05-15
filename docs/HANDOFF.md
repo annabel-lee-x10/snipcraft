@@ -423,4 +423,43 @@ See `D:\a10101100_labs\PLAN_text_expander.md` §G for full phased roadmap.
 
 ---
 
-*Updated 2026-05-14 — v0.1.0 shipped.*
+## 12. Play Store Internal Testing Setup (2026-05-15)
+
+### Status
+
+| Item | State |
+|---|---|
+| Signed AAB | Built — `app/build/outputs/bundle/release/app-release.aab` |
+| Release keystore | Generated and backed up by user |
+| `keystore.properties` | In place at project root |
+| Signing config wired | Yes — merged via PR #7 |
+| INTERNET permission + Play Console declarations | Yes — merged via PR #8 |
+| Privacy policy | `docs/PRIVACY.md` — publicly reachable at raw GitHub URL |
+| Play Console checklist | `docs/PLAY_CONSOLE_CHECKLIST.md` — complete |
+
+### Account details
+
+| Field | Value |
+|---|---|
+| Play Console account | `quiet.build.studios@gmail.com` |
+| Package | `dev.a10101100.snipcraft` |
+| Target track | Internal testing |
+| OPPO device | Tester device for opt-in install |
+
+### What still needs to happen (user action required)
+
+1. **Verify privacy policy URL in incognito** — `https://raw.githubusercontent.com/annabel-lee-x10/snipcraft/main/docs/PRIVACY.md`. Play Console blocks all steps until a live URL is entered.
+2. **Record expansion demo video** — open app → create snippet → type shortcut → expansion fires. Required for accessibility service review.
+3. **Follow `docs/PLAY_CONSOLE_CHECKLIST.md` top to bottom** — all copy, justification text, and data safety answers are pre-written in that file.
+4. **Allow 3–7 days** for the accessibility service enhanced review after submitting.
+
+### Critical stalls to expect
+
+| Stall | Cause | Fix |
+|---|---|---|
+| Can't proceed past store listing | Privacy policy URL is missing or 404 | Verify the raw GitHub URL in incognito before entering it |
+| Accessibility review delay | All accessibility service apps get enhanced review | Have the demo video ready before submitting |
+
+---
+
+*Updated 2026-05-15 — v0.1.1 Play Store internal testing setup.*
