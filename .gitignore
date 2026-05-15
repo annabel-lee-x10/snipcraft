@@ -35,3 +35,10 @@ release-keystore.jks
 
 # Logs
 *.log
+
+# Claude Code workspace (worktrees, session state)
+.claude/
+.clone/
+
+# Gradle daemon config (generated at runtime)
+gradle/gradle-daemon-jvm.properties
