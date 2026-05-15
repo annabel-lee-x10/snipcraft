@@ -6,6 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [v0.1.1] — 2026-05-15
+
+### Changed
+- `versionCode` bumped to 2, `versionName` to `0.1.1` for first Play Store upload.
+- Release signing config wired in `app/build.gradle.kts` — reads credentials from
+  `keystore.properties` at project root (gitignored). Absent file produces a clear
+  build error with setup instructions; debug builds are unaffected.
+- `bundleRelease` now has a `validateReleaseKeystore` preflight task that fails early
+  with actionable instructions rather than a cryptic signing exception.
+
+### Added
+- `docs/RELEASE_KEYSTORE.md` — keytool command, `keystore.properties` template, and
+  backup guidance for the release signing key.
+- `docs/PRIVACY.md` — plain-English privacy policy for Play Console.
+- `docs/PLAY_CONSOLE_CHECKLIST.md` — step-by-step Play Console setup checklist.
+
+[v0.1.1]: https://github.com/annabel-lee-x10/snipcraft/releases/tag/v0.1.1
+
 ## [v0.1.0] — 2026-05-14
 
 ### Added
