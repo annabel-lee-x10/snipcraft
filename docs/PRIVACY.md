@@ -51,4 +51,4 @@ WebDAV sync is always encrypted in transit (HTTPS). The server is under your con
 
 ## Contact
 
-Privacy questions: anaken.x.ai@gmail.com
+Privacy questions: quiet.build.studios@gmail.com
