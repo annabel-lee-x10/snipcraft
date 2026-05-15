@@ -154,9 +154,42 @@ Navigate to: **App content → Ads**
 
 Navigate to: **App content → Data safety**
 
-- [ ] Does your app collect or share user data? **No** (for a local-only install with no WebDAV configured)
-      If you want to be precise about WebDAV: **Yes** → data type: "Other app activity" (sync metadata) → shared with: nobody → encrypted in transit: yes → user can delete: yes.
+Answer accurately — Google cross-checks this against your manifest and SDK usage.
+
+**Data collection / sharing:**
+- [ ] "Does your app collect or share any of the required user data types?" → **Yes**
+- [ ] Data type: **App activity** → subcategory: **Other actions** (text expansion events logged locally)
+- [ ] Collected: **Yes** — stored locally only, never sent to any server
+- [ ] Shared with third parties: **No**
+- [ ] Is data encrypted in transit? **Yes** (WebDAV over HTTPS only; plain HTTP is blocked by default)
+- [ ] Can users request deletion? **Yes** (uninstalling the app deletes all local data)
+
+**Clipboard:**
+- [ ] Data type: **Other data** → "Clipboard content" — used temporarily for the `{{clipboard}}` variable and for paste-based text insertion. Not stored. Not shared.
+
+**WebDAV credentials (if user configures sync):**
+- [ ] Data type: **Personal info** → subcategory: **Other info** (server URL, username, password) — stored on-device only in AES-256-GCM encrypted storage. Transmitted only to the user's own WebDAV server over HTTPS. Never shared.
+
 - [ ] Save and submit.
+
+---
+
+## ⚠️  Play Console — Sensitive declarations (read before uploading)
+
+### Accessibility service declaration
+
+Snipcraft uses an AccessibilityService. Google will require:
+
+- [ ] A **video** demonstrating core functionality (text expansion in a text field). Record a short screen recording showing: open app → create a snippet → type the shortcut in any app → expansion fires. Upload it when prompted.
+- [ ] A written justification: *"Snipcraft uses the Accessibility Service to monitor text input events and perform inline text expansion. It reads text field content solely to detect when a user-defined shortcut is typed, replaces that shortcut with the stored snippet body, and performs no other data collection. Password fields are hard-excluded at two detection layers."*
+- [ ] Google will send a review request email. Response time is typically 3–7 days for accessibility apps.
+
+### Special Use foreground service declaration
+
+`FOREGROUND_SERVICE_SPECIAL_USE` is declared. Google requires a justification:
+
+- [ ] Navigate to: **App content → Foreground service special use permission**
+- [ ] Justification: *"The foreground service keeps the AccessibilityService companion alive on Android 14+ where background service restrictions would otherwise kill it. Without this persistent service, text expansion stops working the moment the user leaves the app. The service shows a minimal persistent notification (IMPORTANCE_MIN) and performs no background data collection."*
 
 ---
 
