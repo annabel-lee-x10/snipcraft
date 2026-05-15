@@ -13,6 +13,7 @@ val keystoreProps = Properties().apply {
 }
 
 tasks.register("validateReleaseKeystore") {
+    outputs.upToDateWhen { false }
     doFirst {
         if (!keystorePropsFile.exists()) {
             throw GradleException(
