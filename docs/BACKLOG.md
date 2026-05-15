@@ -4,6 +4,15 @@ Items deferred post v0.1.0. Ordered roughly by impact.
 
 ---
 
+## 🔑  Action required — release signing
+
+> **TODO (user): generate release keystore.**
+> Run the keytool command in `docs/RELEASE_KEYSTORE.md`, fill in `keystore.properties`
+> at project root, back up both off-machine. Required before `./gradlew bundleRelease`
+> can produce a signed AAB for Play Store upload.
+
+---
+
 ## Code-level TODOs
 
 | File | Line | Item |
