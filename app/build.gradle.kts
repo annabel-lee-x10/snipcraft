@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("snipcraft.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
@@ -5,13 +7,50 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) keystorePropsFile.inputStream().use { load(it) }
+}
+
+tasks.register("validateReleaseKeystore") {
+    doFirst {
+        if (!keystorePropsFile.exists()) {
+            throw GradleException(
+                "\n\n" +
+                "  ❌  keystore.properties not found at project root.\n\n" +
+                "  Before running bundleRelease or assembleRelease:\n" +
+                "    1. Generate the release keystore (see docs/RELEASE_KEYSTORE.md)\n" +
+                "    2. Create keystore.properties at project root with storeFile, storePassword,\n" +
+                "       keyAlias, and keyPassword filled in.\n\n" +
+                "  This keystore CANNOT be regenerated once the app is live on Play Store.\n" +
+                "  Back up the .keystore file and passwords off-machine immediately.\n"
+            )
+        }
+    }
+}
+
+tasks.matching { it.name == "bundleRelease" || it.name == "assembleRelease" }.configureEach {
+    dependsOn("validateReleaseKeystore")
+}
+
 android {
     namespace = "dev.a10101100.snipcraft"
 
     defaultConfig {
         applicationId = "dev.a10101100.snipcraft"
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.1.1"
+    }
+
+    signingConfigs {
+        if (keystorePropsFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProps["storeFile"] as String)
+                storePassword = keystoreProps["storePassword"] as String
+                keyAlias = keystoreProps["keyAlias"] as String
+                keyPassword = keystoreProps["keyPassword"] as String
+            }
+        }
     }
 
     buildFeatures {
@@ -27,6 +66,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = if (keystorePropsFile.exists())
+                signingConfigs.getByName("release")
+            else
+                null
         }
     }
 }
